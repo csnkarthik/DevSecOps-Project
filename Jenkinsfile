@@ -32,14 +32,14 @@ pipeline {
             }
         }       
 
-        stage('Docker Image build'){
-            when { expression { params.action == 'create' } }            
-            steps {         
-                script{
-                    dockerBuild("${params.ImageName}", "${params.ImageTag}", "${params.dockerHubUser}");
-                }
-            }
-        }
+        // stage('Docker Image build'){
+        //     when { expression { params.action == 'create' } }            
+        //     steps {         
+        //         script{
+        //             dockerBuild("${params.ImageName}", "${params.ImageTag}", "${params.dockerHubUser}");
+        //         }
+        //     }
+        // }
 
         // stage('Docker Image Scane'){
         //     when { expression { params.action == 'create' } }            
@@ -50,14 +50,14 @@ pipeline {
         //     }
         // }
 
-        // stage('Docker Image push'){
-        //     when { expression { params.action == 'create' } }            
-        //     steps {         
-        //         script{
-        //             dockerImagePush("${params.ImageName}", "${params.ImageTag}", "${params.dockerHubUser}");
-        //         }
-        //     }
-        // }
+        stage('Docker Image push'){
+            when { expression { params.action == 'create' } }            
+            steps {         
+                script{
+                    dockerImagePush("${params.ImageName}", "${params.ImageTag}", "${params.dockerHubUser}");
+                }
+            }
+        }
        
     }
 }
