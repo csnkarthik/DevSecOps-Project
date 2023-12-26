@@ -6,6 +6,11 @@ pipeline {
         label 'docker'
     }
 
+    tools {
+        nodejs 'NodeJS-Latest'
+    }
+
+
     parameters {
         choice choices: ['create', 'delete'], description: 'Choose create or Delete', name: 'action'
         string defaultValue: 'nextflix', description: 'Name of the Image', name: 'ImageName'
@@ -45,14 +50,14 @@ pipeline {
         //     }
         // }
 
-        stage('Docker Image push'){
-            when { expression { params.action == 'create' } }            
-            steps {         
-                script{
-                    dockerImagePush("${params.ImageName}", "${params.ImageTag}", "${params.dockerHubUser}");
-                }
-            }
-        }
+        // stage('Docker Image push'){
+        //     when { expression { params.action == 'create' } }            
+        //     steps {         
+        //         script{
+        //             dockerImagePush("${params.ImageName}", "${params.ImageTag}", "${params.dockerHubUser}");
+        //         }
+        //     }
+        // }
        
     }
 }
