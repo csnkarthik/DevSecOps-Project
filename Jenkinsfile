@@ -41,14 +41,14 @@ pipeline {
         //     }
         // }
 
-        // stage('Docker Image Scane'){
-        //     when { expression { params.action == 'create' } }            
-        //     steps {         
-        //         script{
-        //             dockerImageScan("${params.ImageName}", "${params.dockerHubUser}");
-        //         }
-        //     }
-        // }
+        stage('Docker Image Scane'){
+            when { expression { params.action == 'create' } }            
+            steps {         
+                script{
+                    dockerImageScan("${params.ImageName}", "${params.dockerHubUser}");
+                }
+            }
+        }
 
         stage('Docker Image push'){
             when { expression { params.action == 'create' } }            
