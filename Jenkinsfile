@@ -51,7 +51,8 @@ pipeline {
                     withSonarQubeEnv(credentialsId: 'sonar-api') 
                     {
                         sh '''
-                            echo $SCANNER_HOME
+                            $SCANNER_HOME/bin/sonar-scanner -Dsonor.projectName=Netflix \
+                            -dsonar.projectkey=Netflix
                         '''
                     }
                 }  
