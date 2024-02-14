@@ -18,7 +18,7 @@ pipeline {
         string defaultValue: 'csnkarthik', description: 'Name of the App', name: 'dockerHubUser'
     }
     environment {
-        #DOCKER_CREDENTIALS = credentials('docker_credentials')
+        //DOCKER_CREDENTIALS = credentials('docker_credentials')
 
         SCANNER_HOME = tool 'sonar-scanner'
 
