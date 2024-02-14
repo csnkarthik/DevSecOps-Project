@@ -18,7 +18,10 @@ pipeline {
         string defaultValue: 'csnkarthik', description: 'Name of the App', name: 'dockerHubUser'
     }
     environment {
-        DOCKER_CREDENTIALS = credentials('docker_credentials')
+        #DOCKER_CREDENTIALS = credentials('docker_credentials')
+
+        SCANNER_HOME = tool 'sonar-scanner'
+
     }
 
     stages {
@@ -40,24 +43,39 @@ pipeline {
         //         }
         //     }
         // }
-
-        stage('Docker Image Scane'){
+        stage('sonarQuebe Analysis'){
             when { expression { params.action == 'create' } }            
-            steps {         
-                script{
-                    dockerImageScan("${params.ImageName}", "${params.dockerHubUser}");
-                }
+            steps {       
+                script
+                {
+                    withSonarQubeEnv(credentialsId: 'sonar-api') 
+                    {
+                        sh '''
+                            echo $SCANNER_HOME
+                        '''
+                    }
+                }  
+                
             }
         }
 
-        stage('Docker Image push'){
-            when { expression { params.action == 'create' } }            
-            steps {         
-                script{
-                    dockerImagePush("${params.ImageName}", "${params.ImageTag}", "${params.dockerHubUser}");
-                }
-            }
-        }
+        // stage('Docker Image Scane'){
+        //     when { expression { params.action == 'create' } }            
+        //     steps {         
+        //         script{
+        //             dockerImageScan("${params.ImageName}", "${params.dockerHubUser}");
+        //         }
+        //     }
+        // }
+
+        // stage('Docker Image push'){
+        //     when { expression { params.action == 'create' } }            
+        //     steps {         
+        //         script{
+        //             dockerImagePush("${params.ImageName}", "${params.ImageTag}", "${params.dockerHubUser}");
+        //         }
+        //     }
+        // }
        
     }
 }
