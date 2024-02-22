@@ -34,15 +34,7 @@ pipeline {
                 )
             }
         }       
-
-        // stage('Docker Image build'){
-        //     when { expression { params.action == 'create' } }            
-        //     steps {         
-        //         script{
-        //             dockerBuild("${params.ImageName}", "${params.ImageTag}", "${params.dockerHubUser}");
-        //         }
-        //     }
-        // }
+        
         stage('sonarQuebe Analysis'){
             when { expression { params.action == 'create' } }            
             steps {       
@@ -57,24 +49,60 @@ pipeline {
                 
             }
         }
-
-        // stage('Docker Image Scane'){
-        //     when { expression { params.action == 'create' } }            
-        //     steps {         
-        //         script{
-        //             dockerImageScan("${params.ImageName}", "${params.dockerHubUser}");
+        // stage("quality gate") {
+        //     steps {
+        //         script {
+        //             waitForQualityGate abortPipeline: false, credentialsId: 'sonar-api'
         //         }
         //     }
         // }
 
-        // stage('Docker Image push'){
-        //     when { expression { params.action == 'create' } }            
-        //     steps {         
-        //         script{
-        //             dockerImagePush("${params.ImageName}", "${params.ImageTag}", "${params.dockerHubUser}");
-        //         }
-        //     }
-        // }
-       
+         stage('quality gate'){
+            when { expression { params.action == 'create' } }
+            steps {         
+                script{
+                    //def sonarcubeCredentials = 'sonar-api'
+                    qualityGateStatus('sonar-api');
+                }      
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
+
+        stage('trivy fs scan') {
+            steps {
+                sh "trivy fs . > trivyfs.txt"
+            }
+        }
+
+        stage('Docker image build & push'){
+            when { expression { params.action == 'create' } }            
+            steps {         
+                script
+                {
+                    dockerImagePush("${params.ImageName}", "${params.ImageTag}", "${params.dockerHubUser}");
+                }
+            }
+        }
+
+        stage('trivy image Scan'){
+            when { expression { params.action == 'create' } }            
+            steps {         
+                script{
+                    dockerImageScan("${params.ImageName}", "${params.dockerHubUser}");
+                }
+            }
+        }
+
+        stage('Deploy to container'){
+            steps{
+                sh 'docker run -d --name netflix -p 8081:80 nasi101/netflix:latest'
+            }
+        }        
+        
     }
+    
 }
